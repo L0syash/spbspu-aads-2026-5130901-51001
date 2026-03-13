@@ -17,4 +17,12 @@ BOOST_AUTO_TEST_CASE(push_front_test)
   BOOST_TEST(list.empty() == false);
 }
 
+BOOST_AUTO_TEST_CASE(pop_front_test)
+{
+  losev::List<int> list;
+  list.push_front(5);
+  list.pop_front();
+  BOOST_TEST(list.empty() == true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

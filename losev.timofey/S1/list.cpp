@@ -21,5 +21,15 @@ bool LIter<T>::operator!=(const LIter& other) const {
   return ptr_ != other.ptr_;
 }
 
+template<class T>
+T& LIter<T>::operator*() {
+  return ptr_->data;
+}
+
+template<class T>
+const T& LIter<T>::operator*() const {
+  return ptr_->data;
+}
+
 template class losev::LIter<int>;
 }

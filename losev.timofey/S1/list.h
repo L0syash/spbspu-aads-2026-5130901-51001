@@ -6,11 +6,27 @@
 
 namespace losev {
 
+// Структура узла списка
+template<class T>
+struct Node {
+  T data;
+  Node* next;
+  Node(const T& value, Node* n = nullptr);
+};
+
 template<class T>
 class List {
 public:
-  List() {}
-  bool empty() const { return true; }
+  List() : head_(nullptr) {}
+  
+  bool empty() const { return head_ == nullptr; }
+  
+  void push_front(const T& value) {
+    head_ = new Node<T>(value, head_);
+  }
+  
+private:
+  Node<T>* head_;
 };
 
 }

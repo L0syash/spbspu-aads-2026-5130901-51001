@@ -31,5 +31,18 @@ const T& LIter<T>::operator*() const {
   return ptr_->data;
 }
 
+template<class T>
+LIter<T>& LIter<T>::operator++() {
+  ptr_ = ptr_->next;
+  return *this;
+}
+
+template<class T>
+LIter<T> LIter<T>::operator++(int) {
+  LIter<T> temp = *this;
+  ptr_ = ptr_->next;
+  return temp;
+}
+
 template class losev::LIter<int>;
 }

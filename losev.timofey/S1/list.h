@@ -24,6 +24,8 @@ public:
   bool operator!=(const LIter& other) const;
   T& operator*();
   const T& operator*() const;
+  LIter& operator++();
+  LIter operator++(int);
 };
 
 template<class T>

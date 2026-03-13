@@ -37,20 +37,17 @@ int main() {
 
   List< NamedList > sequences;
   std::string name;
+  bool overflow_detected = false;
 
-  while (std::cin >> name) {
+  while (std::cin >> name && !overflow_detected) {
     NamedList seq;
     seq.name = name;
 
     int num;
-    while (std::cin.peek() != '\n' && std::cin.peek() != EOF) {
+    while (std::cin.peek() != '\n' && std::cin.peek() != EOF && !overflow_detected) {
       if (!(std::cin >> num)) {
-        std::cin.clear();
-        std::string token;
-        std::cin >> token;
-        unsigned long long big_num;
-        std::cerr << "overflow" << "\n";
-        return 1;
+        overflow_detected = true;
+        break;
       }
       seq.numbers.push_front(num);
     }
@@ -59,8 +56,14 @@ int main() {
       std::cin.ignore();
     }
 
-    seq.numbers = reverse(seq.numbers);
-    sequences.push_front(seq);
+    if (!overflow_detected) {
+      seq.numbers = reverse(seq.numbers);
+      sequences.push_front(seq);
+    }
+  }
+  if (overflow_detected) {
+    std::cerr << "overflow" << "\n";
+    return 1;
   }
   sequences = reverse(sequences);
   if (sequences.empty()) {

@@ -90,7 +90,7 @@ private:
 
 struct NamedList {
   std::string name;
-  List<int> numbers;
+  List<size_t> numbers;
 };
 
 template<class T>

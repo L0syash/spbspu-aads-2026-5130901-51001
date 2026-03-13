@@ -6,7 +6,6 @@
 
 namespace losev {
 
-// Структура узла списка
 template<class T>
 struct Node {
   T data;
@@ -15,10 +14,25 @@ struct Node {
 };
 
 template<class T>
+class LIter {
+  friend class List<T>;
+private:
+  Node<T>* ptr_;
+  explicit LIter(Node<T>* ptr = nullptr);
+public:
+  bool operator==(const LIter& other) const;
+  bool operator!=(const LIter& other) const;
+};
+
+template<class T>
 class List {
 public:
+  using iterator = LIter<T>;
+  iterator begin() { return iterator(head_); }
+  iterator end() { return iterator(nullptr); }
+
   List() : head_(nullptr) {}
-  
+
   bool empty() const { return head_ == nullptr; }
 
   void push_front(const T& value) {

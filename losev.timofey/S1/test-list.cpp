@@ -58,4 +58,12 @@ BOOST_AUTO_TEST_CASE(const_iterator_test)
   BOOST_TEST(*(const_list.begin()) == 5);
 }
 
+BOOST_AUTO_TEST_CASE(copy_test)
+{
+  losev::List<int> original;
+  original.push_front(5);
+  losev::List<int> copy(original);
+  BOOST_TEST(*(copy.begin()) == 5);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

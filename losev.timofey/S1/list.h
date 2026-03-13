@@ -90,6 +90,18 @@ struct NamedList {
   List<int> numbers;
 };
 
+template<class T>
+std::ostream& operator<<(std::ostream& os, const LIter<T>&) {
+  os << "LIter";
+  return os;
+}
+
+template<class T>
+std::ostream& operator<<(std::ostream& os, const LCIter<T>&) {
+  os << "LCIter";
+  return os;
+}
+
 }
 
 #endif

@@ -52,7 +52,7 @@ int main() {
         std::string token;
         std::cin >> token;
         std::cerr << "overflow" << "\n";
-        return 1;
+        std::exit(1);
       }
       seq.numbers.push_front(num);
     }

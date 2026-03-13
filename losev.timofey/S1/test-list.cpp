@@ -32,4 +32,11 @@ BOOST_AUTO_TEST_CASE(iterator_begin_end_test)
   BOOST_TEST(list.begin() != list.end());
 }
 
+BOOST_AUTO_TEST_CASE(iterator_dereference_test)
+{
+  losev::List<int> list;
+  list.push_front(5);
+  BOOST_TEST(*(list.begin()) == 5);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

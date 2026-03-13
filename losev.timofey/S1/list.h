@@ -56,6 +56,8 @@ public:
 
   List() : head_(nullptr) {}
 
+  List(const List& other);
+
   bool empty() const { return head_ == nullptr; }
 
   void push_front(const T& value) {
@@ -69,8 +71,11 @@ public:
     delete temp;
   }
 
+
 private:
   Node<T>* head_;
+
+  void copy_from(const List& other);
 };
 
 

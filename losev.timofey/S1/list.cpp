@@ -5,9 +5,6 @@ namespace losev {
 template<class T>
 Node<T>::Node(const T& value, Node* n) : data(value), next(n) {}
 
-template struct Node<int>;
-template class List<int>;
-
 template<class T>
 LIter<T>::LIter(Node<T>* ptr) : ptr_(ptr) {}
 
@@ -80,5 +77,29 @@ bool LCIter<T>::operator!=(const LCIter& other) const {
   return ptr_ != other.ptr_;
 }
 
-template class losev::LIter<int>;
+template<class T>
+List<T>::List(const List& other) : head_(nullptr) {
+  copy_from(other);
+}
+
+template<class T>
+void List<T>::copy_from(const List& other) {
+  head_ = nullptr;
+  if (other.head_ == nullptr) {
+    return;
+  }
+  head_ = new Node<T>(other.head_->data, nullptr);
+  Node<T>* current_new = head_;
+  Node<T>* current_other = other.head_->next;
+  
+  while (current_other != nullptr) {
+    current_new->next = new Node<T>(current_other->data, nullptr);
+    current_new = current_new->next;
+    current_other = current_other->next;
+  }
+}
+template struct Node<int>;
+template class List<int>;
+template class LIter<int>;
+template class LCIter<int>;
 }

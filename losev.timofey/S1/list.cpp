@@ -147,6 +147,4 @@ template class LCIter<int>;
 template class LCIter<NamedList>;
 template class List<int>;
 template class List<NamedList>;
-template LCIter<int>::LCIter(const LIter<int>&);
-template LCIter<NamedList>::LCIter(const LIter<NamedList>&);
 }

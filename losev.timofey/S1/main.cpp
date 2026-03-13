@@ -95,9 +95,14 @@ int main() {
 
   sequences = reverse(sequences);
 
-  if (sequences.empty()) {
-    std::cout << "0\n";
-    return 0;
+  if (!sequences.empty()) {
+    bool first = true;
+    for (List< NamedList >::iterator it = sequences.begin(); it != sequences.end(); ++it) {
+      if (!first) std::cout << " ";
+      std::cout << it->name;
+      first = false;
+    }
+    std::cout << "\n";
   }
 
   size_t max_len = 0;
@@ -106,41 +111,8 @@ int main() {
     if (len > max_len) max_len = len;
   }
 
-  bool has_overflow = input_overflow;
-
-  if (!has_overflow) {
-    for (size_t i = 0; i < max_len && !has_overflow; ++i) {
-      size_t sum = 0;
-      for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end() && !has_overflow; ++seq_it) {
-        size_t len = length(seq_it->numbers);
-        if (i < len) {
-          size_t val = get_element_at(seq_it->numbers, i);
-          size_t new_sum;
-          if (!add_checked(sum, val, new_sum)) {
-            has_overflow = true;
-          } else {
-            sum = new_sum;
-          }
-        }
-      }
-    }
-  }
-
-  if (has_overflow) {
-    std::cerr << "overflow\n";
-    return 1;
-  }
-
-  bool first = true;
-  for (List< NamedList >::iterator it = sequences.begin(); it != sequences.end(); ++it) {
-    if (!first) std::cout << " ";
-    std::cout << it->name;
-    first = false;
-  }
-  std::cout << "\n";
-
   for (size_t i = 0; i < max_len; ++i) {
-    first = true;
+    bool first = true;
     for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end(); ++seq_it) {
       size_t len = length(seq_it->numbers);
       if (i < len) {
@@ -152,20 +124,51 @@ int main() {
     std::cout << "\n";
   }
 
-  first = true;
-  for (size_t i = 0; i < max_len; ++i) {
+  if (input_overflow) {
+    std::cerr << "overflow\n";
+    return 1;
+  }
+
+  bool sum_overflow = false;
+  for (size_t i = 0; i < max_len && !sum_overflow; ++i) {
     size_t sum = 0;
-    for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end(); ++seq_it) {
+    for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end() && !sum_overflow; ++seq_it) {
       size_t len = length(seq_it->numbers);
       if (i < len) {
-        sum += get_element_at(seq_it->numbers, i);
+        size_t val = get_element_at(seq_it->numbers, i);
+        size_t new_sum;
+        if (!add_checked(sum, val, new_sum)) {
+          sum_overflow = true;
+        } else {
+          sum = new_sum;
+        }
       }
     }
-    if (!first) std::cout << " ";
-    std::cout << sum;
-    first = false;
   }
-  std::cout << "\n";
+
+  if (sum_overflow) {
+    std::cerr << "overflow\n";
+    return 1;
+  }
+
+  if (max_len > 0) {
+    bool first = true;
+    for (size_t i = 0; i < max_len; ++i) {
+      size_t sum = 0;
+      for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end(); ++seq_it) {
+        size_t len = length(seq_it->numbers);
+        if (i < len) {
+          sum += get_element_at(seq_it->numbers, i);
+        }
+      }
+      if (!first) std::cout << " ";
+      std::cout << sum;
+      first = false;
+    }
+    std::cout << "\n";
+  } else {
+    std::cout << "0\n";
+  }
 
   return 0;
 }

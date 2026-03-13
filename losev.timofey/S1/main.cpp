@@ -137,42 +137,44 @@ int main() {
   }
 
 
-  bool first_sum = true;
-  bool sum_overflow = false;
+  if (overflow_detected) {
+    std::cerr << "overflow\n";
+    return 1;
+  }
 
-  for (size_t i = 0; i < max_len; ++i) {
+  bool first_sum = true;
+  bool global_overflow = false;
+
+  for (size_t i = 0; i < max_len && !global_overflow; ++i) {
     size_t sum = 0;
-    bool row_overflow = false;
     for (List< NamedList >::iterator seq_it = sequences.begin(); seq_it != sequences.end(); ++seq_it) {
       size_t len = length(seq_it->numbers);
       if (i < len) {
         size_t val = get_element_at(seq_it->numbers, i);
         size_t new_sum;
         if (!add_checked(sum, val, new_sum)) {
-          row_overflow = true;
-          sum_overflow = true;
-        } else {
-          sum = new_sum;
+          global_overflow = true;
+          break;
         }
+        sum = new_sum;
       }
     }
-
-    if (!row_overflow) {
+    if (!global_overflow) {
       if (!first_sum) std::cout << " ";
       std::cout << sum;
       first_sum = false;
     }
   }
 
+  if (global_overflow) {
+    std::cerr << "overflow\n";
+    return 1;
+  }
+
   if (first_sum) {
     std::cout << "0";
   }
   std::cout << "\n";
-
-  if (sum_overflow || overflow_detected) {
-    std::cerr << "overflow\n";
-    return 1;
-  }
 
   return 0;
 }

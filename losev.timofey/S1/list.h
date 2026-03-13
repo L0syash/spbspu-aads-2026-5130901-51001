@@ -6,6 +6,13 @@
 
 namespace losev {
 
+template<class T>
+class List {
+public:
+  List() {}
+  bool empty() const { return true; }
+};
+
 }
 
 #endif

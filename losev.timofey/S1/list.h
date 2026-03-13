@@ -14,6 +14,21 @@ struct Node {
 };
 
 template<class T>
+class LCIter {
+  friend class List<T>;
+private:
+  const Node<T>* ptr_;
+  explicit LCIter(const Node<T>* ptr = nullptr);
+public:
+  const T& operator*() const;
+  const T* operator->() const;
+  LCIter& operator++();
+  LCIter operator++(int);
+  bool operator==(const LCIter& other) const;
+  bool operator!=(const LCIter& other) const;
+};
+
+template<class T>
 class LIter {
   friend class List<T>;
 private:
@@ -34,6 +49,10 @@ public:
   using iterator = LIter<T>;
   iterator begin() { return iterator(head_); }
   iterator end() { return iterator(nullptr); }
+
+  using const_iterator = LCIter<T>;
+  const_iterator begin() const { return const_iterator(head_); }
+  const_iterator end() const { return const_iterator(nullptr); }
 
   List() : head_(nullptr) {}
 

@@ -44,5 +44,41 @@ LIter<T> LIter<T>::operator++(int) {
   return temp;
 }
 
+template<class T>
+LCIter<T>::LCIter(const Node<T>* ptr) : ptr_(ptr) {}
+
+template<class T>
+const T& LCIter<T>::operator*() const {
+  return ptr_->data;
+}
+
+template<class T>
+const T* LCIter<T>::operator->() const {
+  return &(ptr_->data);
+}
+
+template<class T>
+LCIter<T>& LCIter<T>::operator++() {
+  ptr_ = ptr_->next;
+  return *this;
+}
+
+template<class T>
+LCIter<T> LCIter<T>::operator++(int) {
+  LCIter<T> temp = *this;
+  ptr_ = ptr_->next;
+  return temp;
+}
+
+template<class T>
+bool LCIter<T>::operator==(const LCIter& other) const {
+  return ptr_ == other.ptr_;
+}
+
+template<class T>
+bool LCIter<T>::operator!=(const LCIter& other) const {
+  return ptr_ != other.ptr_;
+}
+
 template class losev::LIter<int>;
 }

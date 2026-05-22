@@ -96,4 +96,25 @@ BOOST_AUTO_TEST_CASE(drop_root_test)
   BOOST_CHECK_THROW(tree.get(10), std::out_of_range);
 }
 
+BOOST_AUTO_TEST_CASE(height_test)
+{
+  losev::BSTree<int, std::string> tree;
+  BOOST_TEST(tree.height() == 0);
+
+  tree.push(10, "ten");
+  BOOST_TEST(tree.height() == 1);
+
+  tree.push(5, "five");
+  BOOST_TEST(tree.height() == 2);
+
+  tree.push(15, "fifteen");
+  BOOST_TEST(tree.height() == 2);
+
+  tree.push(3, "three");
+  BOOST_TEST(tree.height() == 3);
+
+  tree.push(1, "one");
+  BOOST_TEST(tree.height() == 4);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

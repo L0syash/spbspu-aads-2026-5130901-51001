@@ -204,7 +204,11 @@ void cmdCut(std::ostream& out, std::istream& in, GraphTable& graphs)
   }
 
   Graph& mutableGraph = graphs.get(graphName);
-  mutableGraph.cut(from, to, weight);
+  bool result = mutableGraph.cut(from, to, weight);
+
+  if (!result) {
+    out << "<INVALID COMMAND>\n";
+  }
 }
 
 void cmdCreate(std::ostream& out, std::istream& in, GraphTable& graphs)

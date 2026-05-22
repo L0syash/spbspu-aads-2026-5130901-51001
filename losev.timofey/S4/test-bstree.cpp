@@ -174,4 +174,23 @@ BOOST_AUTO_TEST_CASE(rotate_large_left_test)
   BOOST_TEST((*newIt).first == 12);
 }
 
+BOOST_AUTO_TEST_CASE(rotate_large_right_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(10, "ten");
+  tree.push(15, "fifteen");
+  tree.push(5, "five");
+  tree.push(7, "seven");
+  tree.push(6, "six");
+
+  auto it = tree.begin();
+  while ((*it).first != 10)
+  {
+    ++it;
+  }
+
+  auto newIt = tree.rotateLargeRight(it);
+  BOOST_TEST((*newIt).first == 7);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

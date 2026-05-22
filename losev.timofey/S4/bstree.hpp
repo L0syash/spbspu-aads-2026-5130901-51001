@@ -404,6 +404,43 @@ public:
     return const_iterator(y);
   }
 
+  const_iterator rotateRight(const_iterator it)
+  {
+    Node* y = const_cast<Node*>(it.ptr_);
+    if (y == nullptr || y->left == nullptr)
+    {
+      return it;
+    }
+
+    Node* x = y->left;
+    Node* parent = y->parent;
+
+    y->left = x->right;
+    if (x->right != nullptr)
+    {
+      x->right->parent = y;
+    }
+
+    x->right = y;
+    y->parent = x;
+    x->parent = parent;
+
+    if (parent == nullptr)
+    {
+      root_ = x;
+    }
+    else if (parent->left == y)
+    {
+      parent->left = x;
+    }
+    else
+    {
+      parent->right = x;
+    }
+
+    return const_iterator(x);
+  }
+
   iterator begin()
   {
     return root_ ? iterator(findMin(root_)) : iterator(nullptr);

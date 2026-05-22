@@ -122,6 +122,10 @@ void cmdOutbound(std::ostream& out, std::istream& in, GraphTable& graphs)
   }
 
   auto result = graph.getOutbound(vertex);
+  if (result.empty()) {
+    out << "\n";
+    return;
+  }
   for (const auto& p : result) {
     out << p.first;
     for (int w : p.second) {
@@ -151,6 +155,10 @@ void cmdInbound(std::ostream& out, std::istream& in, GraphTable& graphs)
   }
 
   auto result = graph.getInbound(vertex);
+  if (result.empty()) {
+    out << "\n";
+    return;
+  }
   for (const auto& p : result) {
     out << p.first;
     for (int w : p.second) {

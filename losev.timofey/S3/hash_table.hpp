@@ -23,12 +23,9 @@ private:
     Value value;
     Node* next;
 
-    Node(const Key& k, const Value& v, Node* n = nullptr)
-      : key(k), value(v), next(n)
-    {}
-
-    Node(Key&& k, Value&& v, Node* n = nullptr)
-      : key(std::move(k)), value(std::move(v)), next(n)
+    template<typename K, typename V>
+    Node(K&& k, V&& v, Node* n = nullptr)
+      : key(std::forward<K>(k)), value(std::forward<V>(v)), next(n)
     {}
   };
 

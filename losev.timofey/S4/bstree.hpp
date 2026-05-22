@@ -36,6 +36,27 @@ private:
     return node;
   }
 
+  Node* findNode(const Key& k) const
+  {
+    Node* current = root_;
+    while (current)
+    {
+      if (comp_(k, current->key))
+      {
+        current = current->left;
+      }
+      else if (comp_(current->key, k))
+      {
+        current = current->right;
+      }
+      else
+      {
+        return current;
+      }
+    }
+    return nullptr;
+  }
+
   void transplant(Node* u, Node* v)
   {
     if (u->parent == nullptr)
@@ -306,23 +327,7 @@ public:
 
   Value drop(const Key& k)
   {
-    Node* target = root_;
-    while (target)
-    {
-      if (comp_(k, target->key))
-      {
-        target = target->left;
-      }
-      else if (comp_(target->key, k))
-      {
-        target = target->right;
-      }
-      else
-      {
-        break;
-      }
-    }
-
+    Node* target = findNode(k);
     if (!target)
     {
       throw std::out_of_range("key not found");
@@ -362,6 +367,43 @@ public:
     return heightRecursive(root_);
   }
 
+  const_iterator rotateLeft(const_iterator it)
+  {
+    Node* x = const_cast<Node*>(it.ptr_);
+    if (x == nullptr || x->right == nullptr)
+    {
+      return it;
+    }
+
+    Node* y = x->right;
+    Node* parent = x->parent;
+
+    x->right = y->left;
+    if (y->left != nullptr)
+    {
+      y->left->parent = x;
+    }
+
+    y->left = x;
+    x->parent = y;
+    y->parent = parent;
+
+    if (parent == nullptr)
+    {
+      root_ = y;
+    }
+    else if (parent->left == x)
+    {
+      parent->left = y;
+    }
+    else
+    {
+      parent->right = y;
+    }
+
+    return const_iterator(y);
+  }
+
   iterator begin()
   {
     return root_ ? iterator(findMin(root_)) : iterator(nullptr);
@@ -385,13 +427,6 @@ public:
     {
       drop(begin()->first);
     }
-  }
-
-private:
-  Node* findMin(Node* node) const
-  {
-    while (node->left) node = node->left;
-    return node;
   }
 };
 

@@ -1,5 +1,4 @@
-#define BOOST_TEST_MODULE S3Tests
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include "sip_hash.hpp"
 #include "hash_table.hpp"

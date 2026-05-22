@@ -441,6 +441,57 @@ public:
     return const_iterator(x);
   }
 
+  const_iterator rotateLargeLeft(const_iterator it)
+  {
+    Node* x = const_cast<Node*>(it.ptr_);
+    if (x == nullptr || x->right == nullptr)
+    {
+      return it;
+    }
+
+    Node* y = x->right;
+    if (y->left == nullptr)
+    {
+      return rotateLeft(it);
+    }
+
+    Node* z = y->left;
+    Node* parent = x->parent;
+
+    x->right = z->left;
+    if (z->left != nullptr)
+    {
+      z->left->parent = x;
+    }
+
+    y->left = z->right;
+    if (z->right != nullptr)
+    {
+      z->right->parent = y;
+    }
+
+    z->left = x;
+    x->parent = z;
+    z->right = y;
+    y->parent = z;
+    z->parent = parent;
+
+    if (parent == nullptr)
+    {
+      root_ = z;
+    }
+    else if (parent->left == x)
+    {
+      parent->left = z;
+    }
+    else
+    {
+      parent->right = z;
+    }
+
+    return const_iterator(z);
+  }
+
   iterator begin()
   {
     return root_ ? iterator(findMin(root_)) : iterator(nullptr);

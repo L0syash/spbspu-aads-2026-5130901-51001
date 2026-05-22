@@ -70,4 +70,30 @@ BOOST_AUTO_TEST_CASE(iterator_begin_end_test)
   BOOST_TEST(it == tree.end());
 }
 
+BOOST_AUTO_TEST_CASE(drop_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(10, "ten");
+  tree.push(5, "five");
+  tree.push(15, "fifteen");
+
+  std::string val = tree.drop(5);
+  BOOST_TEST(val == "five");
+  BOOST_TEST(tree.size() == 2);
+  BOOST_CHECK_THROW(tree.get(5), std::out_of_range);
+}
+
+BOOST_AUTO_TEST_CASE(drop_root_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(10, "ten");
+  tree.push(5, "five");
+  tree.push(15, "fifteen");
+
+  std::string val = tree.drop(10);
+  BOOST_TEST(val == "ten");
+  BOOST_TEST(tree.size() == 2);
+  BOOST_CHECK_THROW(tree.get(10), std::out_of_range);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

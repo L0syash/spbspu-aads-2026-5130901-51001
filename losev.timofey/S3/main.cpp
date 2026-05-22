@@ -10,7 +10,6 @@
 #include "hash_table.hpp"
 #include "graph.hpp"
 
-
 namespace losev {
 
 using GraphTable = HashTable<std::string, Graph, SipHash<std::string>, std::equal_to<std::string>>;
@@ -63,6 +62,11 @@ void loadGraphs(const std::string& filename, GraphTable& graphs)
 
 void cmdGraphs(std::ostream& out, std::istream&, GraphTable& graphs)
 {
+  if (graphs.empty()) {
+    out << "\n";
+    return;
+  }
+
   std::vector<std::string> names;
   for (auto it = graphs.begin(); it != graphs.end(); ++it) {
     auto pair = *it;
@@ -89,6 +93,10 @@ void cmdVertexes(std::ostream& out, std::istream& in, GraphTable& graphs)
 
   const Graph& graph = graphs.get(graphName);
   std::vector<std::string> vertices = graph.getVerticesSorted();
+  if (vertices.empty()) {
+    out << "\n";
+    return;
+  }
   for (const auto& v : vertices) {
     out << v << "\n";
   }
@@ -152,15 +160,17 @@ void cmdInbound(std::ostream& out, std::istream& in, GraphTable& graphs)
   }
 }
 
-void cmdBind(std::ostream&, std::istream& in, GraphTable& graphs)
+void cmdBind(std::ostream& out, std::istream& in, GraphTable& graphs)
 {
   std::string graphName, from, to;
   int weight = 0;
   if (!(in >> graphName >> from >> to >> weight)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (!graphs.has(graphName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
@@ -168,37 +178,58 @@ void cmdBind(std::ostream&, std::istream& in, GraphTable& graphs)
   graph.addEdge(from, to, weight);
 }
 
-void cmdCut(std::ostream&, std::istream& in, GraphTable& graphs)
+void cmdCut(std::ostream& out, std::istream& in, GraphTable& graphs)
 {
   std::string graphName, from, to;
   int weight = 0;
   if (!(in >> graphName >> from >> to >> weight)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (!graphs.has(graphName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
-  Graph& graph = graphs.get(graphName);
-  graph.cut(from, to, weight);
+  const Graph& graph = graphs.get(graphName);
+  if (!graph.hasVertex(from) || !graph.hasVertex(to)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  if (!graph.hasEdge(from, to)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  Graph& mutableGraph = graphs.get(graphName);
+  mutableGraph.cut(from, to, weight);
 }
 
-void cmdCreate(std::ostream&, std::istream& in, GraphTable& graphs)
+void cmdCreate(std::ostream& out, std::istream& in, GraphTable& graphs)
 {
   std::string graphName;
   size_t count = 0;
-  if (!(in >> graphName >> count)) {
+  if (!(in >> graphName)) {
+    out << "<INVALID COMMAND>\n";
+    return;
+  }
+
+  if (!(in >> count)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (graphs.has(graphName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   std::vector<std::string> vertices(count);
   for (size_t i = 0; i < count; ++i) {
     if (!(in >> vertices[i])) {
+      out << "<INVALID COMMAND>\n";
       return;
     }
   }
@@ -207,18 +238,21 @@ void cmdCreate(std::ostream&, std::istream& in, GraphTable& graphs)
   graphs.add(graphName, std::move(newGraph));
 }
 
-void cmdMerge(std::ostream&, std::istream& in, GraphTable& graphs)
+void cmdMerge(std::ostream& out, std::istream& in, GraphTable& graphs)
 {
   std::string newName, old1, old2;
   if (!(in >> newName >> old1 >> old2)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (graphs.has(newName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (!graphs.has(old1) || !graphs.has(old2)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
@@ -229,25 +263,29 @@ void cmdMerge(std::ostream&, std::istream& in, GraphTable& graphs)
   graphs.add(newName, std::move(merged));
 }
 
-void cmdExtract(std::ostream&, std::istream& in, GraphTable& graphs)
+void cmdExtract(std::ostream& out, std::istream& in, GraphTable& graphs)
 {
   std::string newName, oldName;
   size_t count = 0;
   if (!(in >> newName >> oldName >> count)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (graphs.has(newName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   if (!graphs.has(oldName)) {
+    out << "<INVALID COMMAND>\n";
     return;
   }
 
   std::vector<std::string> vertices(count);
   for (size_t i = 0; i < count; ++i) {
     if (!(in >> vertices[i])) {
+      out << "<INVALID COMMAND>\n";
       return;
     }
   }
@@ -255,6 +293,7 @@ void cmdExtract(std::ostream&, std::istream& in, GraphTable& graphs)
   const Graph& source = graphs.get(oldName);
   for (const auto& v : vertices) {
     if (!source.hasVertex(v)) {
+      out << "<INVALID COMMAND>\n";
       return;
     }
   }
@@ -276,7 +315,7 @@ void registerCommands(CommandTable& commands)
   commands.add("extract", cmdExtract);
 }
 
-}
+}  // namespace losev
 
 int main(int argc, char* argv[])
 {

@@ -35,6 +35,26 @@ private:
     return node;
   }
 
+  void transplant(Node* u, Node* v)
+  {
+    if (u->parent == nullptr)
+    {
+      root_ = v;
+    }
+    else if (u == u->parent->left)
+    {
+      u->parent->left = v;
+    }
+    else
+    {
+      u->parent->right = v;
+    }
+    if (v != nullptr)
+    {
+      v->parent = u->parent;
+    }
+  }
+
 public:
   class Iterator
   {
@@ -274,6 +294,59 @@ public:
     throw std::out_of_range("key not found");
   }
 
+  Value drop(const Key& k)
+  {
+    Node* target = root_;
+    while (target)
+    {
+      if (comp_(k, target->key))
+      {
+        target = target->left;
+      }
+      else if (comp_(target->key, k))
+      {
+        target = target->right;
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    if (!target)
+    {
+      throw std::out_of_range("key not found");
+    }
+
+    Value result = std::move(target->value);
+
+    if (target->left == nullptr)
+    {
+      transplant(target, target->right);
+    }
+    else if (target->right == nullptr)
+    {
+      transplant(target, target->left);
+    }
+    else
+    {
+      Node* successor = findMin(target->right);
+      if (successor->parent != target)
+      {
+        transplant(successor, successor->right);
+        successor->right = target->right;
+        successor->right->parent = successor;
+      }
+      transplant(target, successor);
+      successor->left = target->left;
+      successor->left->parent = successor;
+    }
+
+    delete target;
+    --size_;
+    return result;
+  }
+
   iterator begin()
   {
     return root_ ? iterator(findMin(root_)) : iterator(nullptr);
@@ -304,6 +377,26 @@ private:
   {
     while (node->left) node = node->left;
     return node;
+  }
+
+  void transplant(Node* u, Node* v)
+  {
+    if (u->parent == nullptr)
+    {
+      root_ = v;
+    }
+    else if (u == u->parent->left)
+    {
+      u->parent->left = v;
+    }
+    else
+    {
+      u->parent->right = v;
+    }
+    if (v != nullptr)
+    {
+      v->parent = u->parent;
+    }
   }
 };
 

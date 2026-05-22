@@ -26,6 +26,10 @@ private:
     Node(const Key& k, const Value& v, Node* n = nullptr)
       : key(k), value(v), next(n)
     {}
+
+    Node(Key&& k, Value&& v, Node* n = nullptr)
+      : key(std::move(k)), value(std::move(v)), next(n)
+    {}
   };
 
   Node** buckets_;
@@ -208,6 +212,13 @@ public:
     ++size_;
   }
 
+  void add(const Key& key, Value&& value)
+  {
+    size_t idx = bucketIndex(key);
+    buckets_[idx] = new Node(key, std::move(value), buckets_[idx]);
+    ++size_;
+  }
+
   bool has(const Key& key) const
   {
     size_t idx = bucketIndex(key);
@@ -254,7 +265,7 @@ public:
     Node* current = buckets_[idx];
     while (current != nullptr) {
       if (equal_(current->key, key)) {
-        Value val = current->value;
+        Value val = std::move(current->value);
         if (prev == nullptr) {
           buckets_[idx] = current->next;
         } else {

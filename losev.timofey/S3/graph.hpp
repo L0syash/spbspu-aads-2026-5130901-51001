@@ -25,6 +25,12 @@ public:
     , vertices_(16)
   {}
 
+  Graph(Graph&& other) noexcept = default;
+  Graph& operator=(Graph&& other) noexcept = default;
+
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
+
   void addEdge(const std::string& from, const std::string& to, int weight)
   {
     addVertex(from);

@@ -11,4 +11,34 @@ BOOST_AUTO_TEST_CASE(empty_tree_test)
   BOOST_TEST(tree.size() == 0);
 }
 
+BOOST_AUTO_TEST_CASE(push_and_get_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(5, "five");
+  BOOST_TEST(tree.empty() == false);
+  BOOST_TEST(tree.size() == 1);
+  BOOST_TEST(tree.get(5) == "five");
+}
+
+BOOST_AUTO_TEST_CASE(push_multiple_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(10, "ten");
+  tree.push(5, "five");
+  tree.push(15, "fifteen");
+  BOOST_TEST(tree.size() == 3);
+  BOOST_TEST(tree.get(10) == "ten");
+  BOOST_TEST(tree.get(5) == "five");
+  BOOST_TEST(tree.get(15) == "fifteen");
+}
+
+BOOST_AUTO_TEST_CASE(overwrite_test)
+{
+  losev::BSTree<int, std::string> tree;
+  tree.push(5, "five");
+  tree.push(5, "cinq");
+  BOOST_TEST(tree.size() == 1);
+  BOOST_TEST(tree.get(5) == "cinq");
+}
+
 BOOST_AUTO_TEST_SUITE_END()

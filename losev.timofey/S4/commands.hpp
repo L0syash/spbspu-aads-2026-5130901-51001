@@ -5,8 +5,8 @@
 #include <istream>
 #include <string>
 #include "bstree.hpp"
-#include "../../common/hash_table.hpp"
-#include "../../common/sip_hash.hpp"
+#include "../common/hash_table.hpp"
+#include "../common/sip_hash.hpp"
 
 namespace losev {
 

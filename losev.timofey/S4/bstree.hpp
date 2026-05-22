@@ -27,19 +27,28 @@ private:
   };
 
   Node* root_;
+  Node* sentinel_;
   size_t size_;
   Compare comp_;
 
   Node* findMin(Node* node) const
   {
-    while (node->left) node = node->left;
+    if (node == sentinel_) return sentinel_;
+    while (node->left != sentinel_) node = node->left;
+    return node;
+  }
+
+  Node* findMax(Node* node) const
+  {
+    if (node == sentinel_) return sentinel_;
+    while (node->right != sentinel_) node = node->right;
     return node;
   }
 
   Node* findNode(const Key& k) const
   {
     Node* current = root_;
-    while (current)
+    while (current != sentinel_)
     {
       if (comp_(k, current->key))
       {
@@ -59,7 +68,7 @@ private:
 
   void transplant(Node* u, Node* v)
   {
-    if (u->parent == nullptr)
+    if (u->parent == sentinel_)
     {
       root_ = v;
     }
@@ -71,7 +80,7 @@ private:
     {
       u->parent->right = v;
     }
-    if (v != nullptr)
+    if (v != sentinel_)
     {
       v->parent = u->parent;
     }
@@ -79,11 +88,19 @@ private:
 
   size_t heightRecursive(Node* node) const
   {
-    if (node == nullptr)
+    if (node == sentinel_)
     {
       return 0;
     }
     return 1 + std::max(heightRecursive(node->left), heightRecursive(node->right));
+  }
+
+  void clearRecursive(Node* node)
+  {
+    if (node == sentinel_) return;
+    clearRecursive(node->left);
+    clearRecursive(node->right);
+    delete node;
   }
 
 public:
@@ -91,18 +108,19 @@ public:
   {
   private:
     Node* ptr_;
+    Node* sentinel_;
 
     void goToNext()
     {
-      if (ptr_->right)
+      if (ptr_->right != sentinel_)
       {
         ptr_ = ptr_->right;
-        while (ptr_->left) ptr_ = ptr_->left;
+        while (ptr_->left != sentinel_) ptr_ = ptr_->left;
       }
       else
       {
         Node* parent = ptr_->parent;
-        while (parent && ptr_ == parent->right)
+        while (parent != sentinel_ && ptr_ == parent->right)
         {
           ptr_ = parent;
           parent = parent->parent;
@@ -113,15 +131,15 @@ public:
 
     void goToPrev()
     {
-      if (ptr_->left)
+      if (ptr_->left != sentinel_)
       {
         ptr_ = ptr_->left;
-        while (ptr_->right) ptr_ = ptr_->right;
+        while (ptr_->right != sentinel_) ptr_ = ptr_->right;
       }
       else
       {
         Node* parent = ptr_->parent;
-        while (parent && ptr_ == parent->left)
+        while (parent != sentinel_ && ptr_ == parent->left)
         {
           ptr_ = parent;
           parent = parent->parent;
@@ -131,10 +149,19 @@ public:
     }
 
   public:
-    explicit Iterator(Node* ptr = nullptr) : ptr_(ptr) {}
+    explicit Iterator(Node* ptr = nullptr, Node* sentinel = nullptr)
+      : ptr_(ptr), sentinel_(sentinel)
+    {}
 
-    bool operator==(const Iterator& other) const { return ptr_ == other.ptr_; }
-    bool operator!=(const Iterator& other) const { return ptr_ != other.ptr_; }
+    bool operator==(const Iterator& other) const
+    {
+      return ptr_ == other.ptr_;
+    }
+
+    bool operator!=(const Iterator& other) const
+    {
+      return ptr_ != other.ptr_;
+    }
 
     std::pair<const Key, Value&> operator*()
     {
@@ -156,14 +183,21 @@ public:
 
     Iterator& operator--()
     {
-      goToPrev();
+      if (ptr_ == sentinel_)
+      {
+        ptr_ = findMax(sentinel_->parent);
+      }
+      else
+      {
+        goToPrev();
+      }
       return *this;
     }
 
     Iterator operator--(int)
     {
       Iterator tmp = *this;
-      goToPrev();
+      --(*this);
       return tmp;
     }
   };
@@ -172,18 +206,19 @@ public:
   {
   private:
     const Node* ptr_;
+    const Node* sentinel_;
 
     void goToNext()
     {
-      if (ptr_->right)
+      if (ptr_->right != sentinel_)
       {
         ptr_ = ptr_->right;
-        while (ptr_->left) ptr_ = ptr_->left;
+        while (ptr_->left != sentinel_) ptr_ = ptr_->left;
       }
       else
       {
         const Node* parent = ptr_->parent;
-        while (parent && ptr_ == parent->right)
+        while (parent != sentinel_ && ptr_ == parent->right)
         {
           ptr_ = parent;
           parent = parent->parent;
@@ -194,15 +229,15 @@ public:
 
     void goToPrev()
     {
-      if (ptr_->left)
+      if (ptr_->left != sentinel_)
       {
         ptr_ = ptr_->left;
-        while (ptr_->right) ptr_ = ptr_->right;
+        while (ptr_->right != sentinel_) ptr_ = ptr_->right;
       }
       else
       {
         const Node* parent = ptr_->parent;
-        while (parent && ptr_ == parent->left)
+        while (parent != sentinel_ && ptr_ == parent->left)
         {
           ptr_ = parent;
           parent = parent->parent;
@@ -212,12 +247,23 @@ public:
     }
 
   public:
-    explicit ConstIterator(const Node* ptr = nullptr) : ptr_(ptr) {}
+    explicit ConstIterator(const Node* ptr = nullptr, const Node* sentinel = nullptr)
+      : ptr_(ptr), sentinel_(sentinel)
+    {}
 
-    ConstIterator(const Iterator& other) : ptr_(other.ptr_) {}
+    ConstIterator(const Iterator& other)
+      : ptr_(other.ptr_), sentinel_(other.sentinel_)
+    {}
 
-    bool operator==(const ConstIterator& other) const { return ptr_ == other.ptr_; }
-    bool operator!=(const ConstIterator& other) const { return ptr_ != other.ptr_; }
+    bool operator==(const ConstIterator& other) const
+    {
+      return ptr_ == other.ptr_;
+    }
+
+    bool operator!=(const ConstIterator& other) const
+    {
+      return ptr_ != other.ptr_;
+    }
 
     std::pair<const Key, const Value&> operator*() const
     {
@@ -239,14 +285,21 @@ public:
 
     ConstIterator& operator--()
     {
-      goToPrev();
+      if (ptr_ == sentinel_)
+      {
+        ptr_ = findMax(sentinel_->parent);
+      }
+      else
+      {
+        goToPrev();
+      }
       return *this;
     }
 
     ConstIterator operator--(int)
     {
       ConstIterator tmp = *this;
-      goToPrev();
+      --(*this);
       return tmp;
     }
   };
@@ -254,18 +307,94 @@ public:
   using iterator = Iterator;
   using const_iterator = ConstIterator;
 
-  BSTree() : root_(nullptr), size_(0) {}
+  BSTree()
+    : root_(nullptr)
+    , sentinel_(new Node(Key(), Value()))
+    , size_(0)
+  {
+    sentinel_->left = sentinel_;
+    sentinel_->right = sentinel_;
+    sentinel_->parent = sentinel_;
+    root_ = sentinel_;
+  }
 
-  ~BSTree() { clear(); }
+  ~BSTree()
+  {
+    clearRecursive(root_);
+    delete sentinel_;
+  }
+
+  BSTree(const BSTree& other)
+    : root_(nullptr)
+    , sentinel_(new Node(Key(), Value()))
+    , size_(0)
+    , comp_(other.comp_)
+  {
+    sentinel_->left = sentinel_;
+    sentinel_->right = sentinel_;
+    sentinel_->parent = sentinel_;
+    root_ = sentinel_;
+    for (auto it = other.begin(); it != other.end(); ++it)
+    {
+      auto pair = *it;
+      push(pair.first, pair.second);
+    }
+  }
+
+  BSTree(BSTree&& other) noexcept
+    : root_(other.root_)
+    , sentinel_(other.sentinel_)
+    , size_(other.size_)
+    , comp_(std::move(other.comp_))
+  {
+    other.root_ = nullptr;
+    other.sentinel_ = nullptr;
+    other.size_ = 0;
+  }
+
+  BSTree& operator=(const BSTree& other)
+  {
+    if (this != &other)
+    {
+      BSTree tmp(other);
+      swap(tmp);
+    }
+    return *this;
+  }
+
+  BSTree& operator=(BSTree&& other) noexcept
+  {
+    if (this != &other)
+    {
+      clearRecursive(root_);
+      delete sentinel_;
+      root_ = other.root_;
+      sentinel_ = other.sentinel_;
+      size_ = other.size_;
+      comp_ = std::move(other.comp_);
+      other.root_ = nullptr;
+      other.sentinel_ = nullptr;
+      other.size_ = 0;
+    }
+    return *this;
+  }
+
+  void swap(BSTree& other)
+  {
+    std::swap(root_, other.root_);
+    std::swap(sentinel_, other.sentinel_);
+    std::swap(size_, other.size_);
+    std::swap(comp_, other.comp_);
+  }
 
   bool empty() const { return size_ == 0; }
   size_t size() const { return size_; }
 
   void push(const Key& k, const Value& v)
   {
-    if (!root_)
+    if (root_ == sentinel_)
     {
-      root_ = new Node(k, v);
+      root_ = new Node(k, v, sentinel_);
       ++size_;
       return;
     }
@@ -275,7 +404,7 @@ public:
     {
       if (comp_(k, current->key))
       {
-        if (!current->left)
+        if (current->left == sentinel_)
         {
           current->left = new Node(k, v, current);
           ++size_;
@@ -285,7 +414,7 @@ public:
       }
       else if (comp_(current->key, k))
       {
-        if (!current->right)
+        if (current->right == sentinel_)
         {
           current->right = new Node(k, v, current);
           ++size_;
@@ -304,7 +433,7 @@ public:
   const Value& get(const Key& k) const
   {
     Node* current = root_;
-    while (current)
+    while (current != sentinel_)
     {
       if (comp_(k, current->key)) current = current->left;
       else if (comp_(current->key, k)) current = current->right;
@@ -316,7 +445,7 @@ public:
   Value& get(const Key& k)
   {
     Node* current = root_;
-    while (current)
+    while (current != sentinel_)
     {
       if (comp_(k, current->key)) current = current->left;
       else if (comp_(current->key, k)) current = current->right;
@@ -335,11 +464,11 @@ public:
 
     Value result = std::move(target->value);
 
-    if (target->left == nullptr)
+    if (target->left == sentinel_)
     {
       transplant(target, target->right);
     }
-    else if (target->right == nullptr)
+    else if (target->right == sentinel_)
     {
       transplant(target, target->left);
     }
@@ -370,7 +499,7 @@ public:
   const_iterator rotateLeft(const_iterator it)
   {
     Node* x = const_cast<Node*>(it.ptr_);
-    if (x == nullptr || x->right == nullptr)
+    if (x == sentinel_ || x->right == sentinel_)
     {
       return it;
     }
@@ -379,7 +508,7 @@ public:
     Node* parent = x->parent;
 
     x->right = y->left;
-    if (y->left != nullptr)
+    if (y->left != sentinel_)
     {
       y->left->parent = x;
     }
@@ -388,7 +517,7 @@ public:
     x->parent = y;
     y->parent = parent;
 
-    if (parent == nullptr)
+    if (parent == sentinel_)
     {
       root_ = y;
     }
@@ -401,13 +530,13 @@ public:
       parent->right = y;
     }
 
-    return const_iterator(y);
+    return const_iterator(y, sentinel_);
   }
 
   const_iterator rotateRight(const_iterator it)
   {
     Node* y = const_cast<Node*>(it.ptr_);
-    if (y == nullptr || y->left == nullptr)
+    if (y == sentinel_ || y->left == sentinel_)
     {
       return it;
     }
@@ -416,7 +545,7 @@ public:
     Node* parent = y->parent;
 
     y->left = x->right;
-    if (x->right != nullptr)
+    if (x->right != sentinel_)
     {
       x->right->parent = y;
     }
@@ -425,7 +554,7 @@ public:
     y->parent = x;
     x->parent = parent;
 
-    if (parent == nullptr)
+    if (parent == sentinel_)
     {
       root_ = x;
     }
@@ -438,19 +567,19 @@ public:
       parent->right = x;
     }
 
-    return const_iterator(x);
+    return const_iterator(x, sentinel_);
   }
 
   const_iterator rotateLargeLeft(const_iterator it)
   {
     Node* x = const_cast<Node*>(it.ptr_);
-    if (x == nullptr || x->right == nullptr)
+    if (x == sentinel_ || x->right == sentinel_)
     {
       return it;
     }
 
     Node* y = x->right;
-    if (y->left == nullptr)
+    if (y->left == sentinel_)
     {
       return rotateLeft(it);
     }
@@ -459,13 +588,13 @@ public:
     Node* parent = x->parent;
 
     x->right = z->left;
-    if (z->left != nullptr)
+    if (z->left != sentinel_)
     {
       z->left->parent = x;
     }
 
     y->left = z->right;
-    if (z->right != nullptr)
+    if (z->right != sentinel_)
     {
       z->right->parent = y;
     }
@@ -476,7 +605,7 @@ public:
     y->parent = z;
     z->parent = parent;
 
-    if (parent == nullptr)
+    if (parent == sentinel_)
     {
       root_ = z;
     }
@@ -489,19 +618,19 @@ public:
       parent->right = z;
     }
 
-    return const_iterator(z);
+    return const_iterator(z, sentinel_);
   }
 
   const_iterator rotateLargeRight(const_iterator it)
   {
     Node* y = const_cast<Node*>(it.ptr_);
-    if (y == nullptr || y->left == nullptr)
+    if (y == sentinel_ || y->left == sentinel_)
     {
       return it;
     }
 
     Node* x = y->left;
-    if (x->right == nullptr)
+    if (x->right == sentinel_)
     {
       return rotateRight(it);
     }
@@ -510,13 +639,13 @@ public:
     Node* parent = y->parent;
 
     y->left = z->right;
-    if (z->right != nullptr)
+    if (z->right != sentinel_)
     {
       z->right->parent = y;
     }
 
     x->right = z->left;
-    if (z->left != nullptr)
+    if (z->left != sentinel_)
     {
       z->left->parent = x;
     }
@@ -527,7 +656,7 @@ public:
     x->parent = z;
     z->parent = parent;
 
-    if (parent == nullptr)
+    if (parent == sentinel_)
     {
       root_ = z;
     }
@@ -540,32 +669,37 @@ public:
       parent->right = z;
     }
 
-    return const_iterator(z);
+    return const_iterator(z, sentinel_);
   }
 
   iterator begin()
   {
-    return root_ ? iterator(findMin(root_)) : iterator(nullptr);
+    return iterator(findMin(root_), sentinel_);
   }
 
-  iterator end() { return iterator(nullptr); }
+  iterator end()
+  {
+    return iterator(sentinel_, sentinel_);
+  }
 
   const_iterator begin() const
   {
-    return root_ ? const_iterator(findMin(root_)) : const_iterator(nullptr);
+    return const_iterator(findMin(root_), sentinel_);
   }
 
-  const_iterator end() const { return const_iterator(nullptr); }
+  const_iterator end() const
+  {
+    return const_iterator(sentinel_, sentinel_);
+  }
 
   const_iterator cbegin() const { return begin(); }
   const_iterator cend() const { return end(); }
 
   void clear()
   {
-    while (!empty())
-    {
-      drop(begin()->first);
-    }
+    clearRecursive(root_);
+    root_ = sentinel_;
+    size_ = 0;
   }
 };
 

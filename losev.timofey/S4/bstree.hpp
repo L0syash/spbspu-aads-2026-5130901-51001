@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <functional>
 #include <utility>
+#include <algorithm>
 
 namespace losev {
 
@@ -53,6 +54,15 @@ private:
     {
       v->parent = u->parent;
     }
+  }
+
+  size_t heightRecursive(Node* node) const
+  {
+    if (node == nullptr)
+    {
+      return 0;
+    }
+    return 1 + std::max(heightRecursive(node->left), heightRecursive(node->right));
   }
 
 public:
@@ -347,6 +357,11 @@ public:
     return result;
   }
 
+  size_t height() const
+  {
+    return heightRecursive(root_);
+  }
+
   iterator begin()
   {
     return root_ ? iterator(findMin(root_)) : iterator(nullptr);
@@ -377,26 +392,6 @@ private:
   {
     while (node->left) node = node->left;
     return node;
-  }
-
-  void transplant(Node* u, Node* v)
-  {
-    if (u->parent == nullptr)
-    {
-      root_ = v;
-    }
-    else if (u == u->parent->left)
-    {
-      u->parent->left = v;
-    }
-    else
-    {
-      u->parent->right = v;
-    }
-    if (v != nullptr)
-    {
-      v->parent = u->parent;
-    }
   }
 };
 

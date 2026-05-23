@@ -88,12 +88,6 @@ void cmdComplement(std::ostream& out, std::istream& in, DictionaryTable& dicts)
     return;
   }
 
-  if (dicts.has(newName))
-  {
-    out << "<INVALID COMMAND>\n";
-    return;
-  }
-
   if (!dicts.has(name1) || !dicts.has(name2))
   {
     out << "<INVALID COMMAND>\n";
@@ -123,6 +117,10 @@ void cmdComplement(std::ostream& out, std::istream& in, DictionaryTable& dicts)
     }
   }
 
+  if (dicts.has(newName))
+  {
+    dicts.drop(newName);
+  }
   dicts.add(newName, std::move(result));
 }
 
@@ -130,12 +128,6 @@ void cmdIntersect(std::ostream& out, std::istream& in, DictionaryTable& dicts)
 {
   std::string newName, name1, name2;
   if (!(in >> newName >> name1 >> name2))
-  {
-    out << "<INVALID COMMAND>\n";
-    return;
-  }
-
-  if (dicts.has(newName))
   {
     out << "<INVALID COMMAND>\n";
     return;
@@ -165,6 +157,10 @@ void cmdIntersect(std::ostream& out, std::istream& in, DictionaryTable& dicts)
     }
   }
 
+  if (dicts.has(newName))
+  {
+    dicts.drop(newName);
+  }
   dicts.add(newName, std::move(result));
 }
 
@@ -172,12 +168,6 @@ void cmdUnion(std::ostream& out, std::istream& in, DictionaryTable& dicts)
 {
   std::string newName, name1, name2;
   if (!(in >> newName >> name1 >> name2))
-  {
-    out << "<INVALID COMMAND>\n";
-    return;
-  }
-
-  if (dicts.has(newName))
   {
     out << "<INVALID COMMAND>\n";
     return;
@@ -212,6 +202,10 @@ void cmdUnion(std::ostream& out, std::istream& in, DictionaryTable& dicts)
     }
   }
 
+  if (dicts.has(newName))
+  {
+    dicts.drop(newName);
+  }
   dicts.add(newName, std::move(result));
 }
 

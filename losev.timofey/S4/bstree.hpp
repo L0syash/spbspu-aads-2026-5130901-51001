@@ -357,7 +357,10 @@ public:
     if (this != &other)
     {
       BSTree tmp(other);
-      swap(tmp);
+      std::swap(root_, tmp.root_);
+      std::swap(sentinel_, tmp.sentinel_);
+      std::swap(size_, tmp.size_);
+      std::swap(comp_, tmp.comp_);
     }
     return *this;
   }
@@ -377,14 +380,6 @@ public:
       other.size_ = 0;
     }
     return *this;
-  }
-
-  void swap(BSTree& other)
-  {
-    std::swap(root_, other.root_);
-    std::swap(sentinel_, other.sentinel_);
-    std::swap(size_, other.size_);
-    std::swap(comp_, other.comp_);
   }
 
   bool empty() const { return size_ == 0; }
@@ -703,18 +698,6 @@ public:
   }
 };
 
-}
-
-template <typename Key, typename Value>
-std::ostream& operator<<(std::ostream& os, const typename BSTree<Key, Value>::Iterator&)
-{
-  return os;
-}
-
-template <typename Key, typename Value>
-std::ostream& operator<<(std::ostream& os, const typename BSTree<Key, Value>::ConstIterator&)
-{
-  return os;
 }
 
 #endif

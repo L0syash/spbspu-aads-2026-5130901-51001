@@ -395,26 +395,16 @@ public:
     }
 
     Node* current = root_;
-    while (true)
+    Node* parent = sentinel_;
+    while (current != sentinel_)
     {
+      parent = current;
       if (comp_(k, current->key))
       {
-        if (current->left == sentinel_)
-        {
-          current->left = new Node(k, v, current);
-          ++size_;
-          return;
-        }
         current = current->left;
       }
       else if (comp_(current->key, k))
       {
-        if (current->right == sentinel_)
-        {
-          current->right = new Node(k, v, current);
-          ++size_;
-          return;
-        }
         current = current->right;
       }
       else
@@ -423,6 +413,17 @@ public:
         return;
       }
     }
+
+    Node* newNode = new Node(k, v, parent);
+    if (comp_(k, parent->key))
+    {
+      parent->left = newNode;
+    }
+    else
+    {
+      parent->right = newNode;
+    }
+    ++size_;
   }
 
   const Value& get(const Key& k) const

@@ -705,4 +705,16 @@ public:
 
 }
 
+template <typename Key, typename Value>
+std::ostream& operator<<(std::ostream& os, const typename BSTree<Key, Value>::Iterator&)
+{
+  return os;
+}
+
+template <typename Key, typename Value>
+std::ostream& operator<<(std::ostream& os, const typename BSTree<Key, Value>::ConstIterator&)
+{
+  return os;
+}
+
 #endif

@@ -334,7 +334,7 @@ public:
     sentinel_->right = sentinel_;
     sentinel_->parent = sentinel_;
     root_ = sentinel_;
-    for (auto it = other.begin(); it != other.end(); ++it)
+    for (auto it = other.cbegin(); it != other.cend(); ++it)
     {
       auto pair = *it;
       push(pair.first, pair.second);
@@ -395,16 +395,26 @@ public:
     }
 
     Node* current = root_;
-    Node* parent = sentinel_;
-    while (current != sentinel_)
+    while (true)
     {
-      parent = current;
       if (comp_(k, current->key))
       {
+        if (current->left == sentinel_)
+        {
+          current->left = new Node(k, v, current);
+          ++size_;
+          return;
+        }
         current = current->left;
       }
       else if (comp_(current->key, k))
       {
+        if (current->right == sentinel_)
+        {
+          current->right = new Node(k, v, current);
+          ++size_;
+          return;
+        }
         current = current->right;
       }
       else
@@ -413,17 +423,6 @@ public:
         return;
       }
     }
-
-    Node* newNode = new Node(k, v, parent);
-    if (comp_(k, parent->key))
-    {
-      parent->left = newNode;
-    }
-    else
-    {
-      parent->right = newNode;
-    }
-    ++size_;
   }
 
   const Value& get(const Key& k) const

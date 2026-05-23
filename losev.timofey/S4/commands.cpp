@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <cstdlib>
 
 namespace losev {
 
@@ -70,7 +71,7 @@ void cmdPrint(std::ostream& out, std::istream& in, DictionaryTable& dicts)
   }
 
   out << dictName;
-  for (auto it = dict.begin(); it != dict.end(); ++it)
+  for (auto it = dict.cbegin(); it != dict.cend(); ++it)
   {
     auto pair = *it;
     out << " " << pair.first << " " << pair.second;
@@ -104,11 +105,11 @@ void cmdComplement(std::ostream& out, std::istream& in, DictionaryTable& dicts)
 
   Dictionary result;
 
-  for (auto it = dict1.begin(); it != dict1.end(); ++it)
+  for (auto it = dict1.cbegin(); it != dict1.cend(); ++it)
   {
     auto pair = *it;
     bool found = false;
-    for (auto jt = dict2.begin(); jt != dict2.end(); ++jt)
+    for (auto jt = dict2.cbegin(); jt != dict2.cend(); ++jt)
     {
       if ((*jt).first == pair.first)
       {
@@ -151,10 +152,10 @@ void cmdIntersect(std::ostream& out, std::istream& in, DictionaryTable& dicts)
 
   Dictionary result;
 
-  for (auto it = dict1.begin(); it != dict1.end(); ++it)
+  for (auto it = dict1.cbegin(); it != dict1.cend(); ++it)
   {
     auto pair = *it;
-    for (auto jt = dict2.begin(); jt != dict2.end(); ++jt)
+    for (auto jt = dict2.cbegin(); jt != dict2.cend(); ++jt)
     {
       if ((*jt).first == pair.first)
       {
@@ -193,14 +194,19 @@ void cmdUnion(std::ostream& out, std::istream& in, DictionaryTable& dicts)
 
   Dictionary result = dict1;
 
-  for (auto it = dict2.begin(); it != dict2.end(); ++it)
+  for (auto it = dict2.cbegin(); it != dict2.cend(); ++it)
   {
     auto pair = *it;
-    try
+    bool found = false;
+    for (auto jt = result.cbegin(); jt != result.cend(); ++jt)
     {
-      result.get(pair.first);
+      if ((*jt).first == pair.first)
+      {
+        found = true;
+        break;
+      }
     }
-    catch (const std::out_of_range&)
+    if (!found)
     {
       result.push(pair.first, pair.second);
     }

@@ -7,6 +7,8 @@
 namespace losev {
 
 bool newProfile(std::istream& in, std::ostream& out, const std::string& name);
+bool setProfile(std::istream& in, std::ostream& out, const std::string& name);
+bool quit(std::ostream& out);
 
 }
 

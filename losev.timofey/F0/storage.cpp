@@ -5,6 +5,7 @@
 namespace losev {
 
 BSTree<std::string, RunnerProfile> allProfiles;
+RunnerProfile* currentProfile = nullptr;
 
 void saveData(const std::string& filename)
 {

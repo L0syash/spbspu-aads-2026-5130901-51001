@@ -8,6 +8,7 @@
 namespace losev {
 
 extern BSTree<std::string, RunnerProfile> allProfiles;
+extern RunnerProfile* currentProfile;
 
 void saveData(const std::string& filename);
 void loadData(const std::string& filename);

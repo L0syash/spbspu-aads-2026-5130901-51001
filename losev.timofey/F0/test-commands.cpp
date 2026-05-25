@@ -9,7 +9,7 @@ namespace losev {
 extern BSTree<std::string, RunnerProfile> allProfiles;
 extern RunnerProfile* currentProfile;
 
-} // namespace losev
+}
 
 BOOST_AUTO_TEST_SUITE(new_profile_tests)
 

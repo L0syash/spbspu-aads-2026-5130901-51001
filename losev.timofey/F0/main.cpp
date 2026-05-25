@@ -23,6 +23,37 @@ void handleQuit(std::istream&, std::ostream& out, const std::string&)
   quit(out);
 }
 
+void handleAddTrain(std::istream& in, std::ostream& out, const std::string& arg)
+{
+  std::stringstream ss(arg);
+  int distance;
+  std::string time;
+
+  ss >> distance;
+  ss >> time;
+
+  if (distance <= 0 || time.empty())
+  {
+    out << "Incorrect arguments\n";
+    return;
+  }
+
+  addTrain(out, distance, time);
+}
+
+void handleShowTrain(std::istream& in, std::ostream& out, const std::string& arg)
+{
+  if (arg.empty())
+  {
+    showTrain(out);
+  }
+  else
+  {
+    int distance = std::stoi(arg);
+    showTrain(out, distance);
+  }
+}
+
 } // namespace losev
 
 int main()
@@ -36,6 +67,9 @@ int main()
   commands["new-profile"] = handleNewProfile;
   commands["set-profile"] = handleSetProfile;
   commands["quit"] = handleQuit;
+  commands["add"] = handleAddTrain;
+  commands["add-train"] = handleAddTrain;
+  commands["show-train"] = handleShowTrain;
 
   std::string line;
 
@@ -51,7 +85,11 @@ int main()
     ss >> cmd;
 
     std::string arg;
-    ss >> arg;
+    std::getline(ss, arg);
+    if (!arg.empty() && arg[0] == ' ')
+    {
+      arg = arg.substr(1);
+    }
 
     auto it = commands.find(cmd);
     if (it != commands.end())

@@ -6,6 +6,7 @@
 namespace losev {
 
 int timeToSeconds(const std::string& time);
+std::string secondsToTime(int totalSeconds);
 
 }
 

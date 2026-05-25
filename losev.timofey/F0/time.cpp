@@ -33,4 +33,38 @@ int timeToSeconds(const std::string& time)
   return hours * 3600 + minutes * 60 + seconds;
 }
 
+std::string secondsToTime(int totalSeconds)
+{
+  int hours = totalSeconds / 3600;
+  int minutes = (totalSeconds % 3600) / 60;
+  int seconds = totalSeconds % 60;
+  std::stringstream ss;
+
+  if (hours > 0)
+  {
+    ss << hours << ":";
+    if (minutes < 10)
+    {
+      ss << "0";
+    }
+    ss << minutes << ":";
+    if (seconds < 10)
+    {
+      ss << "0";
+    }
+    ss << seconds;
+  }
+  else
+  {
+    ss << minutes << ":";
+    if (seconds < 10)
+    {
+      ss << "0";
+    }
+    ss << seconds;
+  }
+
+  return ss.str();
+}
+
 }

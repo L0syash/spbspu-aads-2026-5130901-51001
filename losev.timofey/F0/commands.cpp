@@ -4,6 +4,8 @@
 #include "time.hpp"
 #include <stdexcept>
 #include <algorithm>
+#include <vector>
+#include <iomanip> 
 
 namespace losev {
 
@@ -123,7 +125,6 @@ void showTrain(std::ostream& out, int distance)
     return;
   }
 
-  // Собираем тренировки в вектор для сортировки по дистанции
   std::vector<Training> trainings;
   for (auto it = currentProfile->trainings.begin();
        it != currentProfile->trainings.end(); ++it)
@@ -140,7 +141,6 @@ void showTrain(std::ostream& out, int distance)
     return;
   }
 
-  // Сортируем по дистанции и по времени (лучший сначала)
   std::sort(trainings.begin(), trainings.end(),
     [](const Training& a, const Training& b)
     {
@@ -163,30 +163,26 @@ void showTrain(std::ostream& out, int distance)
       currentDist = t.distance;
       firstDist = true;
 
-      out << "=======================\n";
-      out << "|" << currentDist << "km: | time: |  id: |\n";
-      out << "|______|_______|______|\n";
+      out << "+----------+----------+------+\n";
+      out << "| " << std::setw(6) << currentDist << "km |   time   |  id  |\n";
+      out << "+----------+----------+------+\n";
     }
 
     if (firstDist)
     {
-      out << "|top - |" << t.time;
+      out << "| top     ";
       firstDist = false;
     }
     else
     {
-      out << "|      |" << t.time;
+      out << "|         ";
     }
 
-    // Выравнивание пробелами (упрощённо)
-    if (t.time.length() < 8)
-    {
-      out << " ";
-    }
-    out << " | " << t.id << " |\n";
+    out << " | " << std::setw(8) << t.time << " | "
+        << std::setw(4) << t.id << " |\n";
   }
 
-  out << "=======================\n";
+  out << "+----------+----------+------+\n";
 }
 
 }

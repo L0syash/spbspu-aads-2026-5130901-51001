@@ -23,7 +23,7 @@ void handleQuit(std::istream&, std::ostream& out, const std::string&)
   quit(out);
 }
 
-void handleAddTrain(std::istream& in, std::ostream& out, const std::string& arg)
+void handleAddTrain(std::istream&, std::ostream& out, const std::string& arg)
 {
   std::stringstream ss(arg);
   int distance;
@@ -41,7 +41,7 @@ void handleAddTrain(std::istream& in, std::ostream& out, const std::string& arg)
   addTrain(out, distance, time);
 }
 
-void handleShowTrain(std::istream& in, std::ostream& out, const std::string& arg)
+void handleShowTrain(std::istream&, std::ostream& out, const std::string& arg)
 {
   if (arg.empty())
   {

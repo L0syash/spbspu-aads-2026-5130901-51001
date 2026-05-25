@@ -1,45 +1,70 @@
 #include <iostream>
-#include <vector>
 #include <string>
-#include <iomanip>
-#include <limits>
+#include <sstream>
 #include <unordered_map>
+#include <functional>
+#include "commands.hpp"
+#include "storage.hpp"
 
-void add_string(std::istream& in, std::ostream&, std::vector< std::string >& db)
+namespace losev {
+
+void handleNewProfile(std::istream& in, std::ostream& out, const std::string& arg)
 {
-  std::string str;
-  std::cin >> str;
-  db.push_back(str);
+  newProfile(in, out, arg);
 }
 
-void show_last(std::istream&, std::ostream&, std::vector< std::string >& db)
+void handleSetProfile(std::istream& in, std::ostream& out, const std::string& arg)
 {
-  std::cout << db.back() << "\n";
+  setProfile(in, out, arg);
 }
+
+void handleQuit(std::istream&, std::ostream& out, const std::string&)
+{
+  quit(out);
+}
+
+} // namespace losev
 
 int main()
 {
-  std::vector< std::string > db;
-  using cmd_t = void(*)(std::istream&, std::ostream&, std::vector< std::string >&);
-  std::unordered_map< std::string, cmd_t > cmds;
-  cmds["add"] = add_string;
-  cmds["show_last"] = show_last;
-  std::string cmd;
-  while(std::cin >> cmd) {
-    try {
-      cmds.at(cmd)(std::cin, std::cout, db);
-    } catch (const std::out_of_range&) {
+  using namespace losev;
+
+  loadData("runners.txt");
+
+  std::unordered_map<std::string, std::function<void(std::istream&, std::ostream&, const std::string&)>> commands;
+
+  commands["new-profile"] = handleNewProfile;
+  commands["set-profile"] = handleSetProfile;
+  commands["quit"] = handleQuit;
+
+  std::string line;
+
+  while (std::getline(std::cin, line))
+  {
+    if (line.empty())
+    {
+      continue;
+    }
+
+    std::stringstream ss(line);
+    std::string cmd;
+    ss >> cmd;
+
+    std::string arg;
+    ss >> arg;
+
+    auto it = commands.find(cmd);
+    if (it != commands.end())
+    {
+      it->second(std::cin, std::cout, arg);
+    }
+    else
+    {
       std::cout << "INVALID COMMAND\n";
-      auto toignore = std::numeric_limits< std::streamsize >::max();
-      std::cin.ignore(toignore, '\n');
-    } catch (const std::logic_error& e) {
-      std::cout << "<INVALID COMMAND: " << e.what() << ">\n";
     }
   }
-  if (!std::cin.eof()) {
-    std::cerr << "Bad input\n";
-    return 1;
-  }
 
-  return 0;	
+  saveData("runners.txt");
+
+  return 0;
 }

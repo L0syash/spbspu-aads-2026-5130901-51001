@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE BSTreeTests
 #include <boost/test/included/unit_test.hpp>
-#include "bstree.hpp"
+#include "../common/bstree.hpp"
 
 BOOST_AUTO_TEST_SUITE(bstree_tests)
 

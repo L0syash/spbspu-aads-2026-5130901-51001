@@ -185,4 +185,70 @@ void showTrain(std::ostream& out, int distance)
   out << "+----------+----------+------+\n";
 }
 
+bool delTrain(std::istream& in, std::ostream& out, int id)
+{
+  if (currentProfile == nullptr)
+  {
+    out << "You are not in the profile\n";
+    return false;
+  }
+
+  // Ищем тренировку с таким id
+  Training* targetTrain = nullptr;
+  for (auto it = currentProfile->trainings.begin();
+       it != currentProfile->trainings.end(); ++it)
+  {
+    if (it->id == id)
+    {
+      targetTrain = &(*it);
+      break;
+    }
+  }
+
+  if (targetTrain == nullptr)
+  {
+    out << "Training not found\n";
+    return false;
+  }
+
+  out << "Enter password:\n";
+  std::string password;
+  in >> password;
+
+  std::string encrypted = xorEncrypt(password, 0x5A);
+  if (encrypted != currentProfile->encryptedPassword)
+  {
+    out << "Wrong password\n";
+    return false;
+  }
+
+  out << "Are you sure you want to delete the train("
+      << targetTrain->distance << "km - " << targetTrain->time
+      << ")?[Y/n]\n";
+
+  std::string answer;
+  in >> answer;
+
+  if (answer != "Y" && answer != "y")
+  {
+    out << "Deletion cancelled\n";
+    return false;
+  }
+
+  // Удаляем тренировку
+  List<Training> newTrainings;
+  for (auto it = currentProfile->trainings.begin();
+       it != currentProfile->trainings.end(); ++it)
+  {
+    if (it->id != id)
+    {
+      newTrainings.push_front(*it);
+    }
+  }
+  currentProfile->trainings = newTrainings;
+
+  out << "Training deleted\n";
+  return true;
+}
+
 }

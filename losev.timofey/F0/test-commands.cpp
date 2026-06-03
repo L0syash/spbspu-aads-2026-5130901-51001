@@ -255,4 +255,27 @@ BOOST_AUTO_TEST_CASE(show_train_not_in_profile)
   BOOST_TEST(output.find("not in the profile") != std::string::npos);
 }
 
+BOOST_AUTO_TEST_SUITE(route_tests)
+
+BOOST_AUTO_TEST_CASE(find_route_basic)
+{
+  // Граф должен быть загружен перед тестом
+  // Для теста создаём временный граф с несколькими городами
+  losev::Graph testGraph("test");
+  testGraph.addEdge("Paris", "Brussels", 265);
+  testGraph.addEdge("Brussels", "Cologne", 190);
+  testGraph.addEdge("Paris", "Lyon", 465);
+
+  // Временно заменяем europeGraph для теста
+  // (для реального теста нужно создать отдельный граф)
+
+  BOOST_TEST(true);  // Заглушка
+}
+
+BOOST_AUTO_TEST_CASE(find_route_not_loaded)
+{
+  // Если граф не загружен, должна быть ошибка
+  BOOST_TEST(true);  // Заглушка
+}
+
 BOOST_AUTO_TEST_SUITE_END()

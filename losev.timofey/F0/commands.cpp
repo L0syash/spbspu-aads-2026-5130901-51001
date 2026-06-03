@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
+#include <map>
 #include <iomanip>
 
 namespace losev {
@@ -19,7 +20,6 @@ bool newProfile(std::istream& in, std::ostream& out, const std::string& name)
   }
   catch (const std::out_of_range&)
   {
-    // Профиль не найден, можно создавать
   }
 
   out << "Set password:\n";
@@ -193,7 +193,6 @@ bool delTrain(std::istream& in, std::ostream& out, int id)
     return false;
   }
 
-  // Ищем тренировку с таким id
   Training* targetTrain = nullptr;
   for (auto it = currentProfile->trainings.begin();
        it != currentProfile->trainings.end(); ++it)
@@ -249,6 +248,122 @@ bool delTrain(std::istream& in, std::ostream& out, int id)
 
   out << "Training deleted\n";
   return true;
+}
+void showProfile(std::ostream& out, const std::string& name)
+{
+  RunnerProfile profile;
+
+  try
+  {
+    profile = allProfiles.get(name);
+  }
+  catch (const std::out_of_range&)
+  {
+    out << "Profile is not found\n";
+    return;
+  }
+
+  std::map<int, Training> bestTrainings;
+
+  for (auto it = profile.trainings.begin();
+       it != profile.trainings.end(); ++it)
+  {
+    int dist = it->distance;
+    if (bestTrainings.find(dist) == bestTrainings.end() ||
+        it->timeSeconds < bestTrainings[dist].timeSeconds)
+    {
+      bestTrainings[dist] = *it;
+    }
+  }
+
+  out << profile.name << ":\n";
+  out << "Top:\n";
+
+  for (const auto& pair : bestTrainings)
+  {
+    const Training& t = pair.second;
+    out << "     " << t.distance << "km - " << t.time << "\n";
+  }
+}
+
+void setPassword(std::istream& in, std::ostream& out, const std::string& newPassword)
+{
+  if (currentProfile == nullptr)
+  {
+    out << "You are not in the profile\n";
+    return;
+  }
+
+  out << "Please enter your old password:\n";
+  std::string oldPassword;
+  in >> oldPassword;
+
+  std::string encryptedOld = xorEncrypt(oldPassword, 0x5A);
+
+  if (encryptedOld != currentProfile->encryptedPassword)
+  {
+    out << "Wrong password\n";
+    return;
+  }
+
+  currentProfile->encryptedPassword = xorEncrypt(newPassword, 0x5A);
+
+  RunnerProfile updatedProfile = *currentProfile;
+  allProfiles.push(updatedProfile.name, updatedProfile);
+
+  out << "The password is set\n";
+}
+
+void calcPace(std::ostream& out, int distance, const std::string& time)
+{
+  int timeSeconds;
+
+  try
+  {
+    timeSeconds = timeToSeconds(time);
+  }
+  catch (const std::exception&)
+  {
+    out << "Invalid time format\n";
+    return;
+  }
+
+  if (distance <= 0)
+  {
+    out << "Invalid distance\n";
+    return;
+  }
+
+  int paceSeconds = timeSeconds / distance;
+  std::string pace = secondsToTime(paceSeconds);
+
+  out << pace << "\n";
+}
+
+void calcTime(std::ostream& out, int distance, const std::string& pace)
+{
+  int paceSeconds;
+
+  try
+  {
+    paceSeconds = timeToSeconds(pace);
+  }
+  catch (const std::exception&)
+  {
+    out << "Invalid pace format\n";
+    return;
+  }
+
+  if (distance <= 0)
+  {
+    out << "Invalid distance\n";
+    return;
+  }
+
+  int totalSeconds = paceSeconds * distance;
+  std::string time = secondsToTime(totalSeconds);
+
+  out << time << "\n";
 }
 
 }

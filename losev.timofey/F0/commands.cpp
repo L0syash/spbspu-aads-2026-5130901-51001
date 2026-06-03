@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
-#include <iomanip> 
+#include <iomanip>
 
 namespace losev {
 

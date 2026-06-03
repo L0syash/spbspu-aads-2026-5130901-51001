@@ -4,7 +4,7 @@
 
 namespace losev {
 
-BSTree<std::string, RunnerProfile> allProfiles;
+AVLTree<std::string, RunnerProfile> allProfiles;
 RunnerProfile* currentProfile = nullptr;
 
 void saveData(const std::string& filename)
@@ -86,12 +86,17 @@ void loadData(const std::string& filename)
     std::getline(file, nextIdLine);
     profile.nextId = std::stoi(nextIdLine);
 
-    std::getline(file, line);
+    std::getline(file, line); // separator "---"
 
     allProfiles.push(profile.name, profile);
   }
 
   file.close();
 }
+
+template struct Node<Training>;
+template class LIter<Training>;
+template class LCIter<Training>;
+template class List<Training>;
 
 }

@@ -176,7 +176,7 @@ int main()
   using namespace losev;
 
   loadData("runners.txt");
-  loadEuropeGraph("europe_cities.txt");
+  loadEuropeGraph("losev.timofey/F0/europe_cities.txt");
 
   std::unordered_map<std::string, std::function<void(std::istream&, std::ostream&, const std::string&)>> commands;
 

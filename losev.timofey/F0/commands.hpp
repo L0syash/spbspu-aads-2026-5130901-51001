@@ -18,6 +18,7 @@ void showProfile(std::ostream& out, const std::string& name);
 void setPassword(std::istream& in, std::ostream& out, const std::string& newPassword);
 void calcPace(std::ostream& out, int distance, const std::string& time);
 void calcTime(std::ostream& out, int distance, const std::string& pace);
+bool delProfile(std::istream& in, std::ostream& out, const std::string& name);
 
 }
 

@@ -158,7 +158,18 @@ void handleFindRoute(std::istream&, std::ostream& out, const std::string& arg)
   findRoute(out, km, cityCount);
 }
 
-} // namespace losev
+void handleDelProfile(std::istream& in, std::ostream& out, const std::string& arg)
+{
+  if (arg.empty())
+  {
+    out << "Incorrect arguments\n";
+    return;
+  }
+
+  delProfile(in, out, arg);
+}
+
+}
 
 int main()
 {
@@ -184,6 +195,7 @@ int main()
   commands["calc-p"] = handleCalcP;
   commands["calc-t"] = handleCalcT;
   commands["find-route"] = handleFindRoute;
+  commands["del-profile"] = handleDelProfile;
 
   std::string line;
 

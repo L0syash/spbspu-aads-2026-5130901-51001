@@ -279,9 +279,10 @@ void showProfile(std::ostream& out, const std::string& name)
   out << profile.name << ":\n";
   out << "Top:\n";
 
-  for (const auto& pair : bestTrainings)
+  for (std::map<int, Training>::const_iterator it = bestTrainings.begin();
+       it != bestTrainings.end(); ++it)
   {
-    const Training& t = pair.second;
+    const Training& t = it->second;
     out << "     " << t.distance << "km - " << t.time << "\n";
   }
 }
@@ -438,6 +439,50 @@ void globalTop(std::ostream& out)
         << " - " << runnerName;
     out << "                " << secondsToTime(paceSeconds) << "\n";
   }
+}
+ bool delProfile(std::istream& in, std::ostream& out, const std::string& name)
+{
+  RunnerProfile profile;
+  try
+  {
+    profile = allProfiles.get(name);
+  }
+  catch (const std::out_of_range&)
+  {
+    out << "There is no such profile\n";
+    return false;
+  }
+
+  out << "Enter password:\n";
+  std::string password;
+  in >> password;
+
+  std::string encrypted = xorEncrypt(password, 0x5A);
+  if (encrypted != profile.encryptedPassword)
+  {
+    out << "Wrong password\n";
+    return false;
+  }
+
+  out << "Are you sure you want to delete this profile?[Y/n]\n";
+  std::string answer;
+  in >> answer;
+
+  if (answer != "Y" && answer != "y")
+  {
+    out << "Deletion cancelled\n";
+    return false;
+  }
+
+  if (currentProfile != nullptr && currentProfile->name == name)
+  {
+    currentProfile = nullptr;
+  }
+
+  allProfiles.drop(name);
+  out << "Profile deleted\n";
+
+  return true;
 }
 
 }

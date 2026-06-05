@@ -1,0 +1,52 @@
+# Города и расстояния между ними (Европа)
+# Формат: from to distance
+
+# Связи Парижа
+Paris Brussels 265
+Paris Lyon 465
+Paris Strasbourg 490
+
+# Связи Брюсселя
+Brussels Amsterdam 200
+Brussels Berlin 750
+Brussels Cologne 190
+Brussels Paris 265
+
+# Связи Берлина
+Berlin Munich 505
+Berlin Frankfurt 545
+Berlin Brussels 750
+
+# Связи Амстердама
+Amsterdam Cologne 260
+Amsterdam Brussels 200
+
+# Связи Лиона
+Lyon Milan 350
+Lyon Strasbourg 335
+Lyon Paris 465
+
+# Связи Милана
+Milan Munich 490
+Milan Lyon 350
+
+# Связи Франкфурта
+Frankfurt Cologne 190
+Frankfurt Munich 390
+Frankfurt Berlin 545
+
+# Связи Мюнхена
+Munich Strasbourg 365
+Munich Milan 490
+Munich Frankfurt 390
+Munich Berlin 505
+
+# Связи Страсбурга
+Strasbourg Paris 490
+Strasbourg Lyon 335
+Strasbourg Munich 365
+
+# Связи Кёльна
+Cologne Frankfurt 190
+Cologne Brussels 190
+Cologne Amsterdam 260

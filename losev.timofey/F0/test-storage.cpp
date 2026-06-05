@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE(storage_tests)
 BOOST_AUTO_TEST_CASE(save_and_load_empty)
 {
   const std::string filename = "test_empty.txt";
-  
+
   losev::saveData(filename);
   losev::loadData(filename);
 

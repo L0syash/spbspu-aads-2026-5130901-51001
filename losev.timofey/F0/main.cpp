@@ -13,7 +13,7 @@ namespace losev {
 
 void signalHandler(int signum)
 {
-  saveData("losev.timofey/F0/runners.txt"); 
+  saveData("losev.timofey/F0/runners.txt");
   std::exit(signum);
 }
 
@@ -234,6 +234,6 @@ int main()
     }
   }
 
-  saveData("losev.timofey/F0/runners.txt"); 
+  saveData("losev.timofey/F0/runners.txt");
   return 0;
 }

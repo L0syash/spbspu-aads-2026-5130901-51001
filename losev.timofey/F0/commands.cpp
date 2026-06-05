@@ -393,9 +393,14 @@ void myTop(std::ostream& out)
   {
     const Training& t = it->second;
     int paceSeconds = t.timeSeconds / t.distance;
-    out << "     " << t.distance << "km - " << t.time;
-    out << "           " << secondsToTime(paceSeconds) << "\n";
+    std::string paceStr = secondsToTime(paceSeconds);
+
+    out << "     " << t.distance << "km - "
+        << std::left << std::setw(10) << t.time
+        << "     " << paceStr << "\n";
   }
+
+  out << std::right;
 }
 
 void globalTop(std::ostream& out)

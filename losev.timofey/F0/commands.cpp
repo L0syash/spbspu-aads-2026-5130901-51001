@@ -366,4 +366,73 @@ void calcTime(std::ostream& out, int distance, const std::string& pace)
   out << time << "\n";
 }
 
+void myTop(std::ostream& out)
+{
+  if (currentProfile == nullptr)
+  {
+    out << "You are not in the profile\n";
+    return;
+  }
+
+  std::map<int, Training> bestTrainings;
+
+  for (auto it = currentProfile->trainings.begin();
+       it != currentProfile->trainings.end(); ++it)
+  {
+    int dist = it->distance;
+    if (bestTrainings.find(dist) == bestTrainings.end() ||
+        it->timeSeconds < bestTrainings[dist].timeSeconds)
+    {
+      bestTrainings[dist] = *it;
+    }
+  }
+
+  out << "Top:                  Pace(min/km):\n";
+  for (std::map<int, Training>::const_iterator it = bestTrainings.begin();
+       it != bestTrainings.end(); ++it)
+  {
+    const Training& t = it->second;
+    int paceSeconds = t.timeSeconds / t.distance;
+    out << "     " << t.distance << "km - " << t.time;
+    out << "           " << secondsToTime(paceSeconds) << "\n";
+  }
+}
+
+void globalTop(std::ostream& out)
+{
+  std::map<int, std::pair<std::string, Training> > bestRecords;
+
+  for (auto it = allProfiles.begin(); it != allProfiles.end(); ++it)
+  {
+    std::pair<const std::string, RunnerProfile&> pair = *it;
+    const std::string& runnerName = pair.first;
+    const RunnerProfile& profile = pair.second;
+
+    for (auto tit = profile.trainings.begin();
+         tit != profile.trainings.end(); ++tit)
+    {
+      int dist = tit->distance;
+      if (bestRecords.find(dist) == bestRecords.end() ||
+          tit->timeSeconds < bestRecords[dist].second.timeSeconds)
+      {
+        bestRecords[dist] = std::make_pair(runnerName, *tit);
+      }
+    }
+  }
+
+  out << "Top:                              Pace(min/km):\n";
+  for (std::map<int, std::pair<std::string, Training> >::const_iterator it = bestRecords.begin();
+       it != bestRecords.end(); ++it)
+  {
+    int dist = it->first;
+    const Training& t = it->second.second;
+    const std::string& runnerName = it->second.first;
+    int paceSeconds = t.timeSeconds / dist;
+
+    out << "     " << dist << "km - " << t.time
+        << " - " << runnerName;
+    out << "                " << secondsToTime(paceSeconds) << "\n";
+  }
+}
+
 }

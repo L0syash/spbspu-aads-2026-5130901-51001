@@ -72,6 +72,8 @@ void loadEuropeGraph(const std::string& filename)
     }
 
     europeGraph.addEdge(from, to, distance);
+    // Добавляем обратное ребро для двусторонних дорог
+    europeGraph.addEdge(to, from, distance);
   }
 
   graphLoaded = true;
@@ -88,6 +90,7 @@ static void dfsFindRoute(
     int& bestDifference,
     std::vector<std::string>& visited)
 {
+  // Если достигли нужного количества городов
   if (targetCityCount != -1 &&
       static_cast<int>(currentRoute.cities.size()) == targetCityCount)
   {
@@ -100,11 +103,13 @@ static void dfsFindRoute(
     return;
   }
 
-  if (currentRoute.cities.size() > 6)
+  // Ограничиваем максимальное количество городов (10)
+  if (currentRoute.cities.size() > 10)
   {
     return;
   }
 
+  // Получаем всех соседей
   auto outbound = graph.getOutbound(current);
 
   for (const auto& neighborPair : outbound)
@@ -118,6 +123,7 @@ static void dfsFindRoute(
       continue;
     }
 
+    // Берём минимальный вес
     if (weights.empty())
     {
       continue;
@@ -125,6 +131,7 @@ static void dfsFindRoute(
 
     int weight = weights[0];
 
+    // Отсечение: если уже превысили лучшую разницу
     int optimisticDiff = std::abs(currentRoute.totalDistance + weight - targetKm);
     if (optimisticDiff >= bestDifference)
     {

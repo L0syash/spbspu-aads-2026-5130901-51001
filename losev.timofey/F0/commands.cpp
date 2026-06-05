@@ -32,6 +32,7 @@ bool newProfile(std::istream& in, std::ostream& out, const std::string& name)
   profile.nextId = 1;
 
   allProfiles.push(name, profile);
+  saveData("losev.timofey/F0/runners.txt");
   out << "Profile created\n";
 
   return true;
@@ -112,6 +113,7 @@ bool addTrain(std::ostream& out, int distance, const std::string& time)
   currentProfile->trainings.push_front(newTrain);
   currentProfile->nextId++;
 
+  saveData("losev.timofey/F0/runners.txt");
   out << "The train was successfully added.\n";
 
   return true;
@@ -234,7 +236,6 @@ bool delTrain(std::istream& in, std::ostream& out, int id)
     return false;
   }
 
-  // Удаляем тренировку
   List<Training> newTrainings;
   for (auto it = currentProfile->trainings.begin();
        it != currentProfile->trainings.end(); ++it)
@@ -246,9 +247,11 @@ bool delTrain(std::istream& in, std::ostream& out, int id)
   }
   currentProfile->trainings = newTrainings;
 
+  saveData("losev.timofey/F0/runners.txt");
   out << "Training deleted\n";
   return true;
 }
+
 void showProfile(std::ostream& out, const std::string& name)
 {
   RunnerProfile profile;
@@ -312,6 +315,7 @@ void setPassword(std::istream& in, std::ostream& out, const std::string& newPass
   RunnerProfile updatedProfile = *currentProfile;
   allProfiles.push(updatedProfile.name, updatedProfile);
 
+  saveData("losev.timofey/F0/runners.txt");
   out << "The password is set\n";
 }
 
@@ -400,8 +404,6 @@ void myTop(std::ostream& out)
         << std::left << std::setw(10) << t.time
         << "     " << paceStr << "\n";
   }
-
-  out << std::right;
 }
 
 void globalTop(std::ostream& out)
@@ -440,9 +442,11 @@ void globalTop(std::ostream& out)
     out << "                " << secondsToTime(paceSeconds) << "\n";
   }
 }
- bool delProfile(std::istream& in, std::ostream& out, const std::string& name)
+
+bool delProfile(std::istream& in, std::ostream& out, const std::string& name)
 {
   RunnerProfile profile;
+
   try
   {
     profile = allProfiles.get(name);
@@ -480,6 +484,7 @@ void globalTop(std::ostream& out)
   }
 
   allProfiles.drop(name);
+  saveData("losev.timofey/F0/runners.txt");
   out << "Profile deleted\n";
 
   return true;

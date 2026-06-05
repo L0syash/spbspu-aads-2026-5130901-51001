@@ -72,7 +72,6 @@ void loadEuropeGraph(const std::string& filename)
     }
 
     europeGraph.addEdge(from, to, distance);
-    // Добавляем обратное ребро для двусторонних дорог
     europeGraph.addEdge(to, from, distance);
   }
 
@@ -90,9 +89,8 @@ static void dfsFindRoute(
     int& bestDifference,
     std::vector<std::string>& visited)
 {
-  // Если достигли нужного количества городов
-  if (targetCityCount != -1 &&
-      static_cast<int>(currentRoute.cities.size()) == targetCityCount)
+  // Проверяем текущий маршрут (минимум 2 города)
+  if (currentRoute.cities.size() >= 2)
   {
     int diff = currentRoute.difference(targetKm);
     if (diff < bestDifference)
@@ -100,11 +98,17 @@ static void dfsFindRoute(
       bestDifference = diff;
       bestRoute = currentRoute;
     }
+  }
+
+  // Если достигли нужного количества городов
+  if (targetCityCount != -1 &&
+      static_cast<int>(currentRoute.cities.size()) == targetCityCount)
+  {
     return;
   }
 
-  // Ограничиваем максимальное количество городов (10)
-  if (currentRoute.cities.size() > 10)
+  // Ограничиваем максимальное количество городов (5)
+  if (currentRoute.cities.size() >= 5)
   {
     return;
   }
@@ -123,7 +127,6 @@ static void dfsFindRoute(
       continue;
     }
 
-    // Берём минимальный вес
     if (weights.empty())
     {
       continue;
@@ -131,24 +134,21 @@ static void dfsFindRoute(
 
     int weight = weights[0];
 
-    // Отсечение: если уже превысили лучшую разницу
+    // Отсечение по оптимистичной оценке
     int optimisticDiff = std::abs(currentRoute.totalDistance + weight - targetKm);
     if (optimisticDiff >= bestDifference)
     {
       continue;
     }
 
-    // Добавляем город и расстояние
     visited.push_back(nextCity);
     currentRoute.cities.push_back(nextCity);
     currentRoute.distances.push_back(weight);
     currentRoute.totalDistance += weight;
 
-    // Рекурсивный вызов
     dfsFindRoute(graph, nextCity, targetKm, targetCityCount,
                  currentRoute, bestRoute, bestDifference, visited);
 
-    // Откат
     currentRoute.totalDistance -= weight;
     currentRoute.distances.pop_back();
     currentRoute.cities.pop_back();

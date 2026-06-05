@@ -3,15 +3,33 @@
 #include <sstream>
 #include <unordered_map>
 #include <functional>
+#include <csignal>
+#include <cstdlib>
 #include "commands.hpp"
 #include "storage.hpp"
 #include "europe.hpp"
 
 namespace losev {
 
+void signalHandler(int signum)
+{
+  saveData("losev.timofey/F0/runners.txt"); 
+  std::exit(signum);
+}
+
 void handleNewProfile(std::istream& in, std::ostream& out, const std::string& arg)
 {
   newProfile(in, out, arg);
+}
+
+void handleDelProfile(std::istream& in, std::ostream& out, const std::string& arg)
+{
+  if (arg.empty())
+  {
+    out << "Incorrect arguments\n";
+    return;
+  }
+  delProfile(in, out, arg);
 }
 
 void handleSetProfile(std::istream& in, std::ostream& out, const std::string& arg)
@@ -84,7 +102,6 @@ void handleShowProfile(std::istream&, std::ostream& out, const std::string& arg)
     out << "Incorrect arguments\n";
     return;
   }
-
   showProfile(out, arg);
 }
 
@@ -95,7 +112,6 @@ void handleSetPassword(std::istream& in, std::ostream& out, const std::string& a
     out << "Incorrect arguments\n";
     return;
   }
-
   setPassword(in, out, arg);
 }
 
@@ -113,7 +129,6 @@ void handleCalcP(std::istream&, std::ostream& out, const std::string& arg)
     out << "Incorrect arguments\n";
     return;
   }
-
   calcPace(out, distance, time);
 }
 
@@ -131,7 +146,6 @@ void handleCalcT(std::istream&, std::ostream& out, const std::string& arg)
     out << "Incorrect arguments\n";
     return;
   }
-
   calcTime(out, distance, pace);
 }
 
@@ -158,29 +172,22 @@ void handleFindRoute(std::istream&, std::ostream& out, const std::string& arg)
   findRoute(out, km, cityCount);
 }
 
-void handleDelProfile(std::istream& in, std::ostream& out, const std::string& arg)
-{
-  if (arg.empty())
-  {
-    out << "Incorrect arguments\n";
-    return;
-  }
-
-  delProfile(in, out, arg);
-}
-
 }
 
 int main()
 {
   using namespace losev;
 
-  loadData("runners.txt");
+  std::signal(SIGINT, signalHandler);
+  std::signal(SIGTERM, signalHandler);
+
+  loadData("losev.timofey/F0/runners.txt");
   loadEuropeGraph("losev.timofey/F0/europe_cities.txt");
 
   std::unordered_map<std::string, std::function<void(std::istream&, std::ostream&, const std::string&)>> commands;
 
   commands["new-profile"] = handleNewProfile;
+  commands["del-profile"] = handleDelProfile;
   commands["set-profile"] = handleSetProfile;
   commands["quit"] = handleQuit;
   commands["add"] = handleAddTrain;
@@ -195,7 +202,6 @@ int main()
   commands["calc-p"] = handleCalcP;
   commands["calc-t"] = handleCalcT;
   commands["find-route"] = handleFindRoute;
-  commands["del-profile"] = handleDelProfile;
 
   std::string line;
 
@@ -228,7 +234,6 @@ int main()
     }
   }
 
-  saveData("runners.txt");
-
+  saveData("losev.timofey/F0/runners.txt"); 
   return 0;
 }
